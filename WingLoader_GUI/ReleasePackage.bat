@@ -1,4 +1,10 @@
-set "zipfile=WingLoaderC#.zip"
+@echo off
+set "TargetFile=.\WingLoader_GUI.exe"
+for /f "tokens=*" %%V in ('powershell -NoProfile -Command "(Get-Item '%TargetFile%').VersionInfo.FileVersion.Trim()"') do (
+    set "FileVersion=%%V"
+)
+set "zipfile=WingLoaderCSharp-%FileVersion%.zip"
+echo Packaging to %zipFile%
 
 REM Create the zip file (and overwrite if it already exists)
 if exist "%zipfile%" del "%zipfile%"
@@ -11,10 +17,11 @@ if exist "Wing2AT.zip" del "Wing2AT.zip
 if exist "Wing2KS.zip" del "Wing2KS.zip
 if exist "FFMPEG" rmdir /s /q "FFMPEG"
 
-copy "S:\P4WS\Source\WingLoader\Packages\Release Archive"\*.zip .
+copy "S:\P4WS\Source\WingLoader\Packages\Release Archive"\*.zip .  > null
 
 if exist "dosbox-staging-windows-x64-v0.83.0-RC1.zip" del "dosbox-staging-windows-x64-v0.83.0-RC1.zip"
 
-REM Compress all files and subdirectories, excluding the batch script
+echo Compressing all files and subdirectories, excluding the batch script.
+
 powershell -Command "Get-ChildItem -Path . -Exclude 'ReleasePackage.bat', '%zipfile%' | Compress-Archive -DestinationPath '%zipfile%' -Force"
 powershell -Command "Get-ChildItem -Path . -Exclude 'ReleasePackage.bat', '%zipfile%' | Remove-Item -Force -Recurse"
