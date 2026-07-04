@@ -1,0 +1,2123 @@
+tb_Message1|contains|low|playAudio|Data\Audio\Flyby.wav|
+tb_Message1|contains|high|playAudio|Data\Audio\Thud.wav|
+
+//SM15
+SE_Version|0.10|
+SCRIPT|100|//|PEEK|
+
+//|Check the Buffers|
+Peek|[Peek.WC1]|PeekAtString|[PEEK_ADDRESS_1]|[String.Buffer1]|
+Peek|[Peek.WC1]|PeekAtString|[PEEK_ADDRESS_2]|[String.Buffer2]|
+
+//|Check the string states for a change in data|
+String|[String.Buffer1]|State|[Num.CheckState1]|
+String|[String.Buffer2]|State|[Num.CheckState2]|
+
+//|Add the two numbers together (Into [Num.CheckState1])|
+Num|[Num.CheckState1]|N+|[Num.CheckState2]|
+
+//|If they both equal 0. No change in the text. Break current script and script 0|
+If|Num|[Num.CheckState1]|=|0|
+BreakScriptZero|
+BreakScriptCurrent|
+EndIf|
+
+//|New BreakPoint in case the buffer ends with " km" Fix for WC2 spamming the buffer.
+If|String|[String.Buffer1]|EndsWith| km|
+BreakScriptZero|
+BreakScriptCurrent|
+EndIf|
+
+//|Safety call for after funeral service. The buffer repeats when you enter the barricks to reload. This fixes that.
+Audio|StopChannel|[Channel.Voice]|
+
+//|If there was a change read the Name Callsign and system Memory for changes.
+Peek|[Peek.WC1]|PeekAtString|[PEEK_ADDRESS_NAME]|[String.Name]| //|Player Name|
+Peek|[Peek.WC1]|PeekAtString|[PEEK_ADDRESS_CALLSIGN]|[String.Callsign]| //|Player Callsign
+Peek|[Peek.WC1]|PeekAtString|[PEEK_ADDRESS_SYSTEM]|[String.System]| //|Player Callsign
+
+//|Peek|[Peek.WC1]|PeekAtNum|[PEEK_ADDRESS_YEAR]|[String.Year]| //|Player Callsign
+Peek|[Peek.WC1]|PeekAtNum|[PEEK_ADDRESS_DAY]|[String.Day]| //|Player Callsign
+Peek|[Peek.WC1]|PeekAtNum|[PEEK_ADDRESS_HOUR]|[String.Hour]| //|Player Callsign
+Peek|[Peek.WC1]|PeekAtNum|[PEEK_ADDRESS_MINUTE]|[String.Minute]| //|Player Callsign
+
+//|If there was an Update to the String Buffers and the scripting hasn't broken yet. Send the string to the debug console.|
+Debug|PeekUpdate|[Peek.WC1]|[PEEK_ADDRESS_1]|[String.Buffer1]|
+Debug|PeekUpdate|[Peek.WC1]|[PEEK_ADDRESS_2]|[String.Buffer2]|
+
+//|Look for a match to start branching|
+If|String|[String.Buffer2]|HasWord|We are gathered here to pay| //|All Funerals Start like this.
+Script|Run|-1| //|We Are Gatherered here to pay tribute detected Activating Dialogue|
+BreakScriptCurrent|
+EndIf|
+
+If|String|[String.Buffer2]|HasWord|Colonel Halcyon's office.|
+Script|Run|-2| //|Colonel Halcyon Office Detected Activating Dialogue|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer2]|HasWord|Hangar deck.|
+Script|Run|-3| //|Hangar Deck detected Activating Dialogue|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Mission Hangar|
+Script|Run|-4| //|Hovered Over Missiong Hanger Door Activating briefing Dialogue|
+BreakScriptCurrent|
+EndIf|
+
+
+SUBSCRIPT|1| //|Funeral|
+Script|Enable|0|101| //|Enable Shotglass Dialoug tree
+Script|Disable|0|102| //|Disable Paladin Dialoug tree
+Script|Disable|0|103| //|Disable Angel Dialoug tree
+Script|Disable|0|104| //|Disable Briefing Dialoug tree
+END|
+
+SUBSCRIPT|2|//|Office|
+Script|Disable|0|101| //|Enable Shotglass Dialoug tree
+Script|Enable|0|102| //|Disable Paladin Dialoug tree
+Script|Disable|0|103| //|Disable Angel Dialoug tree
+Script|Disable|0|104| //|Disable Briefing Dialoug tree
+END|
+
+SUBSCRIPT|3|//|Medal|
+Script|Disable|0|101| //|Enable Shotglass Dialoug tree
+Script|Disable|0|102| //|Disable Paladin Dialoug tree
+Script|Enable|0|103| //|Disable Angel Dialoug tree
+Script|Disable|0|104| //|Disable Briefing Dialoug tree
+END|
+
+SUBSCRIPT|4|//|Mission Briefing|
+Script|Disable|0|101| //|Enable Shotglass Dialoug tree
+Script|Disable|0|102| //|Disable Paladin Dialoug tree
+Script|Disable|0|103| //|Disable Angel Dialoug tree
+Script|Enable|0|104| //|Disable Briefing Dialoug tree
+END|
+EndScript|
+
+SCRIPT|101|//|Funeral|
+If|String|[String.Buffer2]|=|Company...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funpc0009.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer2]|=|Atten-SHUN!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funmi1.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer2]|=|Prepare arms!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funmi2.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer2]|=|Fire!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funpc0011.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+//|Player Funeral
+If|String|[String.Buffer1]|=|We are gathered here to pay tribute to one of our own, 2ND LT. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funpc0000.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|We are gathered here to pay tribute to one of our own, 1ST LT. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funpc0001.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|We are gathered here to pay tribute to one of our own, CAPTAIN ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funpc0002.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|We are gathered here to pay tribute to one of our own, MAJOR ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funpc0003.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|We are gathered here to pay tribute to one of our own, LT. COL. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funpc0004.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|We are gathered here to pay tribute to one of our own, COL. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funpc0005.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|It is always sad to lose a pilot...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funpc0006.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|... but it is especially difficult when he is as young as ${[String.Callsign]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funpc0007.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|He died without even a chance to prove himself.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funpc0008.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Farewell, ${[String.Callsign]}. You'll be missed.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funpc0010.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|In just a few missions, ${[String.Callsign]} began what would surely have been a brilliant career.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funpc0013.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Now that career has been cut short.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funpc0014.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Who can say what ${[String.Callsign]} might have accomplished for the Confederation?|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funpc0015.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Without a doubt, ${[String.Callsign]} was one of the Confederation's finest pilots.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funpc0016.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Time after time, he led the Confederation forces to victory.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funpc0017.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Now, as the Kilrathi enemy begins to flee the Vega Sector we bid farewell to a true hero.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funpc0018.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|As we all know, the campaign for the Vega Sector has been long and hard.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funpc0019.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|No one fought harder to hold back the advancing Kilrathi horde than ${[String.Callsign]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funpc0020.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Now he has made the ultimate sacrifice for the Confederation.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funpc0021.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+//|WingMan Funeral
+If|String|[String.Buffer1]|=|We are gathered here to pay our last respects to a good friend...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0000.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|...and one of the Terran Confederation's boldest defenders.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0001.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Lieutenant Mariko Tanaka was one of our youngest pilots...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0002.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|...but also one of our most promising.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0003.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Her death robs both our own hearts and the future of the Confederation.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0004.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Captain Ian St. John was the maverick of the Tiger's Claw.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0005.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|He pushed us to look at things in new and different ways.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0006.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Now that we are without him, we must remember to keep an open mind...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0007.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|...and look for unconventional responses to the Kilrathi challenge.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0008.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|The Terran Confederation has lost one of its best leaders...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0009.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|...Major Kien Chen, whom we all knew as Bossman.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0010.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Many of us, myself included, turned to Major Chen for advice from time to time.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0011.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Now we must find our own answers.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0012.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Major Michael Casey was easily one of our most brilliant pilots.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0013.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Though he rarely opened his heart to his fellow officers...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0014.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|...I feel sure that he would have wanted to die as he did...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0015.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|...in combat with the Kilrathi, at the controls of a starfighter.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0016.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|We are here to bid farewell to Captain Jeannette Devereaux...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0017.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|...our friend and comrade-at-arms.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0018.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|The Tiger's Claw will miss both her piloting skills...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0019.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|...and her fiery devotion to the Terran Confederation.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0020.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Major James Taggart, one of our most seasoned veterans...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0021.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|...has fallen in battle with the Kilrathi foe.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0022.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|We will all miss Paladin's friendship, his wealth of experience...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0023.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|...and his tales of the first battles against the Kilrathi.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0024.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Now we say goodbye to one of the newest members of our Squadron...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0025.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|...Lieutenant Todd Marshall, whom we all knew as Maniac.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0026.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|His enthusiasm and confidence were models for us all...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0027.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|...it is a shame to see his career end so soon, and so unfortunately.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0028.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Sadly, we must now say goodbye to Captain Joseph Khumalo.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0029.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Despite the pressures of the war we fight...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0030.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|...Captain Khumalo was always unaffected by the madness around him.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0031.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|He remained an island of stability for us, in a sea of insanity.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Funeral/funwm0032.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Goodbye, Spirit... I hope I can fill the gap you leave.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Player/funwm0034.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|The Rec Room won't be the same without you, Hunter. Goodbye.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Player/funwm0035.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|I hope someday I'll make you proud, Bossman. Goodbye.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Player/funwm0036.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|So long, Iceman. I'll see that the Kilrathi pay for what they've done.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Player/funwm0037.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Au revoir, Angel. We will carry on the fight for you.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Player/funwm0038.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Goodbye, Paladin. I'll try to remember what you've taught me.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Player/funwm0039.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Goodbye, Maniac. I swear I'll get the furball that took you down.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Player/funwm0040.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Don't worry, Knight. We'll finish the job for you.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Player/funwm0041.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+EndScript|
+
+SCRIPT|102|//|Office|
+If|String|[String.Buffer1]|=|${[String.Name]}. Come in. I need to speak with you.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0001.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Yes, sir?|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Player/off0002.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|I've been speaking with sector command.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0003.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|The brass have been reviewing your record, and I have good news...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0004.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|The order came in this morning... I've been authorized to promote you.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0005.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Congratulations, 1ST LT. ${[String.Name]}. Keep up the good work.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0006.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Congratulations, CAPTAIN ${[String.Name]}. Keep up the good work.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0007.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Congratulations, MAJOR ${[String.Name]}. Keep up the good work.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0008.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Congratulations, LT. COL. ${[String.Name]}. Keep up the good work.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0009.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Congratulations, COL. ${[String.Name]}. Keep up the good work.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0010.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Thank you, sir. I'll do my best.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Player/off0011.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Glad to hear it. Now, another thing I need to speak to you about...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0012.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|That ship you just bailed out of cost over a hundred million credits.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0013.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|It'll be weeks or months before the Tiger's Claw receives a replacement.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0014.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|I know, sir.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Player/off0015.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|If you have no choice but to eject, then do it...
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0016.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|...but don't let me catch you bailing out of a ship you could've flown home.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0017.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|You're about to receive a Golden Sun for ejecting and surviving...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0018.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|but you only get one of those per career.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0019.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|After that, ejecting just wastes the Confederation's starfighters.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0020.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|I understand, colonel. I'll keep it in mind.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Player/off0021.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|I'm counting on it, 2ND LT.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0022.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|I'm counting on it, 1ST LT.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0023.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|I'm counting on it, CAPTAIN.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0024.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|I'm counting on it, MAJOR.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0025.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|I'm counting on it, LT. COL.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0026.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|I'm counting on it, COL.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0027.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Just a moment, ${[String.Callsign]}. I have one more thing to tell you.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0028.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|We'll be leaving Enyo soon, and I need to make some personnel changes.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0029.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|We'll be leaving McAuliffe soon, and I need to make some personnel changes.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0030.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|We'll be leaving Gateway soon, and I need to make some personnel changes.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0031.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|We'll be leaving Gimle soon, and I need to make some personnel changes.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0032.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|We'll be leaving Brimstone soon, and I need to make some personnel changes.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0033.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|We'll be leaving Chengdu soon, and I need to make some personnel changes.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0034.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|We'll be leaving Dakota soon, and I need to make some personnel changes.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0035.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|We'll be leaving Port Hedland soon, and I need to make some personnel changes.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0036.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|We'll be leaving Kurasawa soon, and I need to make some personnel changes.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0037.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|We'll be leaving Rostov soon, and I need to make some personnel changes.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0038.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|We'll be leaving Hubble's Star soon, and I need to make some personnel changes.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0039.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Effective immediately following the jump, you'll be reassigned.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0040.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|You'll be flying Hornets with the Killer Bees again.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0041.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|I want you in a Scimitar-class medium fighter, with Blue Devil Squadron.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0042.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|I need you in Star Slayer Squadron, flying a Raptor-class heavy fighter.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0043.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|I want you in one of the new Rapier-class mediums, in Black Lion Squadron.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0044.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Yes, sir! You won't be sorry!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Player/off0045.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Have I done something wrong, sir?|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Player/off0046.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|It's nothing personal, ${[String.Callsign]}. Just a simple matter of attrition.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0047.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|As we lose ships and pilots from various squadrons...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0048.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|...I have to shift personnel to keep the maximum number of fighters active.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0049.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|I see, sir.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Player/off0050.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Good. I'm glad to hear it.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0051.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|That's all, then, 2ND LT. Dismissed.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0052.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|That's all, then, 1ST LT. Dismissed.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0053.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|That's all, then, CAPTAIN. Dismissed.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0054.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|That's all, then, MAJOR. Dismissed.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0055.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|That's all, then, LT. COL. Dismissed.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0056.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|That's all, then, COL. Dismissed.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Office/off0057.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+Script|Run|300| //|Story incase you eject|
+EndScript|
+
+SCRIPT|103|//|Medal|
+If|String|[String.Buffer1]|=|For meritorious conduct in confronting the Kilrathi enemy...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0001.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|In consideration of his valorous service to humanity...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0002.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|leading the forces of the Confederation against the Empire of Kilrah...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0003.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|taking a decisive role in the Vega Sector Campaign....|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0004.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|and commanding the squadron which accomplished the pivotal victory...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0005.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|For bravely sacrificing his vessel and endangering his life...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0006.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|in combat with the Kilrathi enemy...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0007.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|in the Enyo System|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0008.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|in the McAuliffe System|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0009.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|in the Gateway System|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0010.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|in the Gimle System|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0011.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|in the Brimstone System|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0012.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|in the Cheng-Du System|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0013.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|in the Dakota System|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0014.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|in the Port Hedland|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0015.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|in the Kurasawa System|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0016.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|in the Rostov System|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0017.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|in the Hubble's Star|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0018.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|in the Hell's Kitchen|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0019.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|in the Venice System|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0020.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Bronze Star to 2ND LT. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0021.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Bronze Star to 1ST LT. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0022.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Bronze Star to CAPTAIN ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0023.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Bronze Star to MAJOR ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0024.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Bronze Star to LT. COL. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0025.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Bronze Star to COL. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0026.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Silver Star to 2ND LT. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0027.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Silver Star to 1ST LT. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0028.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Silver Star to CAPTAIN ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0029.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Silver Star to MAJOR ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0030.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Silver Star to LT. COL. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0031.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Silver Star to COL. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0032.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Gold Star to 2ND LT. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0033.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Gold Star to 1ST LT. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0034.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Gold Star to CAPTAIN ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0035.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Gold Star to MAJOR ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0036.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Gold Star to LT. COL. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0037.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Gold Star to COL. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0038.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Golden Sun to 2ND LT. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0039.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Golden Sun to 1ST LT. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0040.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Golden Sun to CAPTAIN ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0041.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Golden Sun to MAJOR ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0042.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Golden Sun to LT. COL. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0043.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Golden Sun to COL. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0044.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Terran Confederation Medal of Honor to 2ND LT. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0045.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Terran Confederation Medal of Honor to 1ST LT. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0046.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Terran Confederation Medal of Honor to CAPTAIN ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0047.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Terran Confederation Medal of Honor to MAJOR ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0048.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Terran Confederation Medal of Honor to LT. COL. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0049.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|the Terran Confederation is proud to present the Terran Confederation Medal of Honor to COL. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0050.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+
+If|String|[String.Buffer1]|=|Your courage is exemplary of the Confederation's finest defenders.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0051.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|History shall number you among the greatest heroes of humanity.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0054.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Your devotion to the Confederation honors all humanity.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0055.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Good job, ${[String.Callsign]}. Congratulations.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Medal/med0056.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Thank you, sir.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Player/med0057.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|Filled with pride, you meet the applause of your fellows.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Narrator/med0058.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+Script|Run|300| //|Story incase you get a medal|
+EndScript|
+
+SCRIPT|104|//|Mission Briefing|
+Script|Run|200|//|Landing Dialogue Temp
+
+//|Secret Missions 1 TEST|
+If|String|[String.System]|=|Goddard|
+Script|Run|209|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.System]|=|Border Zone|
+Script|Run|203|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.System]|=|Midgard|
+Script|Run|212|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.System]|=|Jotunheim|
+Script|Run|201|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.System]|=|Bifrost|
+Script|Run|202|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.System]|=|Valgard|
+Script|Run|213|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.System]|=|Vigrid|
+Script|Run|211|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.System]|=|Retreat|
+Script|Run|210|
+BreakScriptCurrent|
+EndIf|
+EndScript|
+
+SCRIPT|200|//|Landing Dialogue|
+If|String|[String.Buffer2]|HasWord|You got away|//|You got away pretty clean, sir!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Land/Land1.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer2]|HasWord|Looks like i|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Land/Land2.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer2]|HasWord|You sure got|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Land/Land3.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer2]|HasWord|Glad to see |
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Land/Land4.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Voice]|
+BreakScriptCurrent|
+EndIf|
+EndScript|
+
+SCRIPT|201|//|SPIRIT Inflight Coms|
+If|String|[String.Buffer1]|=|SPIRIT: My honor is to obey.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Spirit-01.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|SPIRIT: I humbly ask your apologies, but I cannot.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Spirit-02.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|SPIRIT: Excuse me commander, I have noticed enemy ships.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Spirit-03.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|SPIRIT: Ready to engage, commander.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Spirit-04.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|SPIRIT: I regretfully ask for assistance.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Spirit-05.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|SPIRIT: I have managed to kill one, Dommo!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Spirit-06.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|SPIRIT: Your skill is obvious, I bow to your talents.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Spirit-07.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|SPIRIT: It has been an honor! My ancestors await me...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Spirit-08.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|SPIRIT: We must leave, commander. There will be other times.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Spirit-09.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|SPIRIT: I will report your bravery.  Good luck, ${[String.Callsign]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Spirit-10.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|SPIRIT: I respectfully request that you attack the enemy.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Spirit-11.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+Script|Run|250|//|KILRATHI COMS
+Script|Run|251|//|CONFED SHIPS COMS
+EndScript|
+
+SCRIPT|202|//|PALADIN Inflight Coms|
+If|String|[String.Buffer1]|=|PALADIN: Gotcha covered, laddy.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Paladin-01.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|PALADIN: 'fraid I cannot, ${[String.Callsign]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Paladin-02.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|PALADIN: Blast! The enemy are upon us!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Paladin-03.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|PALADIN: Laddy, let me loose, will ya?|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Paladin-04.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|PALADIN: Ach!  They caught me with me kilt down!| //|Double Space????|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Paladin-05.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|PALADIN: That one was for me father!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Paladin-06.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|PALADIN: Aye! Good shot commander.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Paladin-07.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|PALADIN: Commander, she's breakin' up!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Paladin-08.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|PALADIN: This melee's too thick for even a Highlander!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Paladin-09.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|PALADIN: I've been routed!  Good luck, lad.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Paladin-10.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|PALADIN: Blast, laddy!  Watch it!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Paladin-11.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+Script|Run|250|//|KILRATHI COMS
+Script|Run|251|//|CONFED SHIPS COMS
+EndScript|
+
+SCRIPT|203|//|ANGEL Inflight Coms|
+If|String|[String.Buffer1]|=|ANGEL: Oui. I am complying.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Angel-01.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|ANGEL: Non. I respectfully disobey.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Angel-02.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|ANGEL: Enemy sighted mon capitaine.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Angel-03.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|ANGEL: It is our duty to engage.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Angel-04.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|ANGEL: Aidez-moi!  I am nearly destroyed!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Angel-05.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|ANGEL: Devereaux reporting enemy fighter destroyed.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Angel-06.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|ANGEL: You perform your duty well, mon capitaine.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Angel-07.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|ANGEL: Au revoir commander.  You must continue without me.| //|Double Space????|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Angel-08.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|ANGEL: Capitaine, your wingman respectfully suggests retreat.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Angel-09.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|ANGEL: Au'revoir. I must leave you now.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Angel-10.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|ANGEL: Zut! Watch it, s'il vous plait.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Angel-11.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+Script|Run|250|//|KILRATHI COMS
+Script|Run|251|//|CONFED SHIPS COMS
+EndScript|
+
+SCRIPT|209|//|HUNTER Inflight Coms|
+If|String|[String.Buffer1]|=|HUNTER: You got it boss.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Hunter-01.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|HUNTER: No can do...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Hunter-02.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|HUNTER: ${[String.Callsign]}!  I've got enemy ships on screen!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Hunter-03.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|HUNTER: Let's take out those bogeys...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Hunter-04.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|HUNTER: ${[String.Callsign]}, I'm in trouble!  Lend me a hand!| //|Double Space????|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Hunter-05.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|HUNTER: Yeee hooo!  Got 'im!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Hunter-06.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|HUNTER: Way to go ${[String.Callsign]}; nice shootin'|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Hunter-07.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|HUNTER: I'm hit!  I'm breaking up!  The cockpit's cra...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Hunter-08.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|HUNTER: Commander, they're too tough for us!  Take us home!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Hunter-09.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|HUNTER: You gave 'em a run for their money, friend...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Hunter-10.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|HUNTER: Watch it bucko!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Hunter-11.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+Script|Run|250|//|KILRATHI COMS
+Script|Run|251|//|CONFED SHIPS COMS
+EndScript|
+
+SCRIPT|210|//|MANIAC Inflight Coms|
+If|String|[String.Buffer1]|=|MANIAC: You got it, baby.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Maniac-01.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|MANIAC: Forget it, bud.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Maniac-02.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|MANIAC: There're the bastards.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Maniac-03.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|MANIAC: Off I go!  Watch my smoke!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Maniac-04.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|MANIAC: They're blowin' me to pieces! Help!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Maniac-05.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|MANIAC: Ha ha!  Got another!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Maniac-06.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|MANIAC: Sure took you long enough!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Maniac-07.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|MANIAC: Arrrrrghhhh!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Maniac-08.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|MANIAC: Lets get out of here, man!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Maniac-09.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|MANIAC: Later, bud!  Too hot for me!| //|Double Space????|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Maniac-10.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|MANIAC: Watch out, idiot!  I mean 2ND LT...| //|Double Space????|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Maniac-11.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|MANIAC: Watch out, idiot!  I mean 1ST LT...| //|Double Space????|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Maniac-12.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|MANIAC: Watch out, idiot!  I mean CAPTAIN...| //|Double Space????|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Maniac-13.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|MANIAC: Watch out, idiot!  I mean MAJOR...| //|Double Space????|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Maniac-14.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|MANIAC: Watch out, idiot!  I mean LT. COL...| //|Double Space????|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Maniac-15.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|MANIAC: Watch out, idiot!  I mean COL...| //|Double Space????|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Maniac-16.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+Script|Run|250|//|KILRATHI COMS
+Script|Run|251|//|CONFED SHIPS COMS
+EndScript|
+
+SCRIPT|211|//|KNIGHT Inflight Coms|
+If|String|[String.Buffer1]|=|KNIGHT: Affirmative, 2ND LT.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-01.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Affirmative, 1ST LT.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-02.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Affirmative, CAPTAIN.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-03.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Affirmative, MAJOR.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-04.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Affirmative, LT. COL.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-05.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Affirmative, COL.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-06.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Negative, 2ND LT.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-07.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Negative, 1ST LT.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-08.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Negative, CAPTAIN.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-09.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Negative, MAJOR.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-10.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Negative, LT. COL.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-11.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Negative, COL.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-12.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Enemy ahead, 2ND LT.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-13.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Enemy ahead, 1ST LT.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-14.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Enemy ahead, CAPTAIN.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-15.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Enemy ahead, MAJOR.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-16.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Enemy ahead, LT. COL.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-17.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Enemy ahead, COL.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-18.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Permission to break and attack, sir?|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-19.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: ${[String.Callsign]}, please assist me.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-20.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: One down, ${[String.Callsign]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-21.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Good shooting, 2ND LT.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-22.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Good shooting, 1ST LT.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-23.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Good shooting, CAPTAIN.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-24.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Good shooting, MAJOR.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-25.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Good shooting, LT. COL.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-26.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Good shooting, COL.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-27.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Avenge my death...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-28.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Advise strategic withdrawal, sir.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-29.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Breaking off pusuit; heading home.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-30.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Be careful, 2ND LT. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-31.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Be careful, 1ST LT. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-32.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Be careful, CAPTAIN ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-33.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Be careful, MAJOR ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-34.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Be careful, LT. COL ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-35.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|KNIGHT: Be careful, COL ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Knight-36.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+Script|Run|250|//|KILRATHI COMS
+Script|Run|251|//|CONFED SHIPS COMS
+EndScript|
+
+SCRIPT|212|//|BOSSMAN Inflight Coms|
+If|String|[String.Buffer1]|=|BOSSMAN: Affirmative, I am complying.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-01.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|BOSSMAN: Negative, cannot comply.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-02.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|BOSSMAN: Enemy sighted.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-03.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|BOSSMAN: Confirm my attack, 2ND LT.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-04.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|BOSSMAN: Confirm my attack, 1ST LT.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-05.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|BOSSMAN: Confirm my attack, CAPTAIN.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-06.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|BOSSMAN: Confirm my attack, MAJOR.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-07.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|BOSSMAN: Confirm my attack, LT. COL.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-08.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|BOSSMAN: Confirm my attack, COL.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-09.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|BOSSMAN: Can't shake these runts...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-10.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|BOSSMAN: There's one for the chalkboard!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-11.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|BOSSMAN: Good job 2ND LT. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-12.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|BOSSMAN: Good job 1ST LT. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-13.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|BOSSMAN: Good job CAPTAIN ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-14.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|BOSSMAN: Good job MAJOR ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-15.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|BOSSMAN: Good job LT. COL ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-16.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|BOSSMAN: Good job COL ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-17.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|BOSSMAN: Sorry, ${[String.Callsign]}, you're on your own.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-18.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|BOSSMAN: Lets break for home, ${[String.Callsign]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-19.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|BOSSMAN: Sorry, ${[String.Callsign]} , I must return to base.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-20.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|BOSSMAN: Careful, 2ND LT.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-21.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|BOSSMAN: Careful, 1ST LT.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-22.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|BOSSMAN: Careful, CAPTAIN.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-23.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|BOSSMAN: Careful, MAJOR.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-24.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|BOSSMAN: Careful, LT. COL.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-25.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|BOSSMAN: Careful, COL.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Bossman-26.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+Script|Run|250|//|KILRATHI COMS
+Script|Run|251|//|CONFED SHIPS COMS
+EndScript|
+
+SCRIPT|213|//|ICEMAN Inflight Coms|
+If|String|[String.Buffer1]|=|ICEMAN: Wilco.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Iceman-01.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|ICEMAN: Unable to comply.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Iceman-02.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|ICEMAN: Enemy ships sighted.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Iceman-03.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|ICEMAN: Ready to engage.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Iceman-04.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|ICEMAN: Mayday.  Request assistance.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Iceman-05.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|ICEMAN: That was for Vega nine.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Iceman-06.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|ICEMAN: Good.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Iceman-07.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|ICEMAN: Avenge my planet, for I cannot...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Iceman-08.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|ICEMAN: 2ND LT., the odds are against us.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Iceman-09.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|ICEMAN: 1ST LT., the odds are against us.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Iceman-10.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|ICEMAN: CAPTAIN, the odds are against us.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Iceman-11.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|ICEMAN: MAJOR, the odds are against us.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Iceman-12.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|ICEMAN: LT. COL, the odds are against us.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Iceman-13.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|ICEMAN: COL, the odds are against us.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Iceman-14.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|ICEMAN: I must scorn death.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Iceman-15.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|=|ICEMAN: Watch your target.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Iceman-16.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+Script|Run|250|//|KILRATHI COMS
+Script|Run|251|//|CONFED SHIPS COMS
+EndScript|
+
+SCRIPT|250|//|ENEMEY COMS|
+If|String|[String.Buffer1]|HasWord|Ape! I hope you are a better target than the last five.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-01.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Bhurak greets you again, oh noble target.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-02.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|You Terrans fight like primates!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-03.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Do apes send their neuters to fight warriors?|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-04.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Perhaps I have played too long with my prey...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-05.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Your friend provided me with little amusement.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-06.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Only an ape could have such luck!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-07.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Ape!  Wha..   rrowww...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-08.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Ape, only now do you see Kilra's natural superiority.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-09.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Ape, you are an opponent worthy of another battle.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-10.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|You shall both breathe vacuum soon!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-11.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Kharang, I have met this vermin before...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-12.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|What fun to watch Terrans implode in space!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-13.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|You shall eject, and I shall sever your miserable life.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-14.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|I have heard Terran blood boils in space.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-15.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|That ape squealed when it popped!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-16.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|You shall not put me in that vacuum|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-17.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|The void!  The voi...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-18.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Death to the ape!  Death now!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-19.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Ape!  Hairless groveller!  Vermin!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-20.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Welcome to your funeral, ape.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-21.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|This time, ape, it shall be different.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-22.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Terrans panic too easily, like mice.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-23.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|I see this ape is cracking.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-24.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|That tactic will fail like all your others.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-25.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|My mate would purr to see that.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-26.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|This ape seems to have fangs!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-27.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|No sacrifice is too great in my duty to the Empire.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-28.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|The empire shall inevitably triumph.  Flee or die.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-29.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|We shall meet again, hairless one.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-30.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Sad, that I must litter space with ape corpses.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-31.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Only luck saved you last time.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-32.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|I wonder if Terrans would make good slaves..|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-33.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|You shall never enjoy your planet again, ape.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-34.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Soon Kilra shall conquer the wealth Terra itself!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-35.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|That ape did not live long enough to serve the empire!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-36.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|How rare!  A primate actually shot me!  Amusing.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-37.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|It cannot be!  No ape could do this to me!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-38.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Be comforted, ape.  Your death honors the worthy.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-39.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Next time you shall not be so lucky.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy-40.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+
+If|String|[String.Buffer1]|HasWord|Die, hairless scum!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy2-01.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Hairless scum, die!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy2-02.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Is this the best the apes can offer?|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy2-03.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|You fight like a stillborn kitten.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy2-04.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|I shall feast upon your offspring.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy2-05.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|A proper fate for a coward.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy2-06.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Ah! So the monkey boy can fight!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy2-07.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|My offspring shall avenge me!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy2-08.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Your people will soon be but a memory...|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy2-09.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|The battle is yours, but Kilra's shall have war!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Enemy2-10.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+EndScript|
+
+SCRIPT|251|//|CONFED SHIPS COMS|
+If|String|[String.Buffer1]|HasWord|Affirmative.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Confed-01.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Negative.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Confed-02.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Enemy sighted, sir.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Confed-03.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Shall I attack, sir?|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Confed-04.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Mayday, all Confederate craft please assist.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Confed-05.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|I've blown up an enemy fighter!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Confed-06.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Glad to have you with us, 2ND LT. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Confed-07.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Glad to have you with us, 1ST LT. ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Confed-08.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Glad to have you with us, CAPTAIN ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Confed-09.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Glad to have you with us, MAJOR ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Confed-10.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Glad to have you with us, LT. COL ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Confed-11.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Glad to have you with us, COL ${[String.Name]}.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Confed-12.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Fight on, ${[String.Callsign]}, I'm done for!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Confed-13.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|${[String.Callsign]}, you are clear to land.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Confed-14.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Negative, ${[String.Callsign]}.  Do not land.|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Confed-15.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+If|String|[String.Buffer1]|HasWord|Careful, that's me!|
+Load|Audio|[Audio.Buffer]|48000|Data/Voice/Coms/Confed-16.wav|
+Audio|Play|[Audio.Buffer]|[Channel.Coms]|
+BreakScriptCurrent|
+EndIf|
+EndScript|

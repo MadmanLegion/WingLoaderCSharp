@@ -1,0 +1,70 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <DebugType>embedded</DebugType>
+  </PropertyGroup>
+
+  <Target Name="Copy3rdPartyLibraries" AfterTargets="Build">
+    <ItemGroup>
+      <!-- Steps up to the parent folder and targets all files inside 'SharedSettings' -->
+      <FFMPEG Include="..\..\3rd Party Packages\FFMPEG\*.*" />
+      <SDL Include="..\..\3rd Party Packages\SDL2-2.30.11-win32-x64\*.dll" />
+      <Dosbox Include="..\..\3rd Party Packages\dosbox-staging-windows-x64-v0.83.0-RC1.zip" />
+      <Data Include="..\Packages\Data.zip" />
+      <Wing Include="..\Packages\Wing.zip" />
+      <WingAT Include="..\Packages\WingAT.zip" />
+      <WingKS Include="..\Packages\WingKS.zip" />
+      <Wing2 Include="..\Packages\Wing2.zip" />
+      <Wing2AT Include="..\Packages\Wing2AT.zip" />
+      <Wing2KS Include="..\Packages\Wing2KS.zip" />
+    </ItemGroup>
+    <!-- Copies files while preserving the nested folder structure inside the 'plugins' subfolder -->
+    <Copy SourceFiles="@(FFMPEG)" DestinationFolder="$(TargetDir)\FFMPEG" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(SDL)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(Dosbox)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(Data)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(Wing)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(WingAT)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(WingKS)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(Wing2)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(Wing2AT)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(Wing2KS)" DestinationFolder="$(TargetDir)" SkipUnchangedFiles="true" />
+  </Target>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WingLoader_Main\WingLoader_Main.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Readme.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="ReleasePackage.bat">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <!-- Automatically move build libraries to the "libs" subfolder -->
+  <Target Name="MoveDllsToSubfolder" AfterTargets="Build">
+    <ItemGroup>
+      <DllFiles Include="$(TargetDir)*.dll" Exclude="$(TargetDir)$(TargetName).dll" />
+      <PdbFiles Include="$(TargetDir)*.pdb" Exclude="$(TargetDir)$(TargetName).pdb" />
+    </ItemGroup>
+    <Move SourceFiles="@(DllFiles)" DestinationFolder="$(TargetDir)libs" OverwriteReadOnlyFiles="true" />
+    <Move SourceFiles="@(PdbFiles)" DestinationFolder="$(TargetDir)libs" OverwriteReadOnlyFiles="true" />
+  </Target>
+  
+</Project>

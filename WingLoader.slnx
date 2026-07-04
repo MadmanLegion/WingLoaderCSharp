@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Generic_Generics/Generic_Generics.csproj" />
+  <Project Path="WingLoader_Generics/WingLoader_Generics.csproj" />
+  <Project Path="WingLoader_GUI/WingLoader_GUI.csproj" />
+  <Project Path="WingLoader_Main/WingLoader_Main.csproj" Id="d3535144-f82b-4562-9997-4194380e96e1" />
+</Solution>

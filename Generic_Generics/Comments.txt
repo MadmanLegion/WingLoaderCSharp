@@ -1,0 +1,9 @@
+
+
+string callback = null raises warning "Cannot convert null literal to non-nullable reference type."
+Can make the variable nullable on object definition
+	string? callback = null
+Can provide a default value
+	string callback = string.Empty
+Can use the null forgiving operator to tell the compiler to ignore the warning
+	string callback = null!
