@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.Props" />
+  </Folder>
   <Project Path="Generic_Generics/Generic_Generics.csproj" />
   <Project Path="WingLoader_Generics/WingLoader_Generics.csproj" />
   <Project Path="WingLoader_GUI/WingLoader_GUI.csproj" />

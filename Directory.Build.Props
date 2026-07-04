@@ -1,0 +1,28 @@
+<Project>
+  <PropertyGroup>
+    <BuildMajor>1</BuildMajor>
+
+    <RawYear>$([System.DateTime]::Now.Year.ToString().Substring(2))</RawYear>
+    <RawMonth>$([System.DateTime]::Now.Month.ToString().PadLeft(2, '0'))</RawMonth>
+    <BuildYearMonth>$(RawYear)$(RawMonth)</BuildYearMonth>
+    
+    <RawDay>$([System.DateTime]::Now.Day.ToString().PadLeft(2, '0'))</RawDay>
+    <BuildDay>$(RawDay)</BuildDay>
+    
+    <RawHour>$([System.DateTime]::Now.Hour.ToString().PadLeft(2, '0'))</RawHour>
+    <RawMinute>$([System.DateTime]::Now.Minute.ToString().PadLeft(2, '0'))</RawMinute>
+    <BuildTime>$(RawHour)$(RawMinute)</BuildTime>
+
+    <CalculatedVersion>$(BuildMajor).$(BuildYearMonth).$(BuildDay).$(BuildTime)</CalculatedVersion>
+  </PropertyGroup>
+
+  <!-- 2. Map the clean numeric strings safely to your targets -->
+  <PropertyGroup>
+    <Deterministic>false</Deterministic>
+    <DeterministicSourcePaths>false</DeterministicSourcePaths>
+
+    <AssemblyVersion>$(CalculatedVersion)</AssemblyVersion>
+    <FileVersion>$(CalculatedVersion)</FileVersion>
+    <InformationalVersion>$(CalculatedVersion)</InformationalVersion>
+  </PropertyGroup>
+</Project>
