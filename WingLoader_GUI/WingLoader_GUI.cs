@@ -342,6 +342,11 @@ namespace WingLoader_GUI
                         activeGameMode = WingLoader_Worker.GameMode.SO2;
                     }
                 }
+
+                else if (rb_Priv.Checked)
+                {
+                    activeGameMode = WingLoader_Worker.GameMode.PRIV;
+                }
                 else
                 {
                     activeGameMode = WingLoader_Worker.GameMode.DEFAULT;
@@ -379,6 +384,7 @@ namespace WingLoader_GUI
             tb_hexstring.Visible = true;
             tb_Hex.Visible = true;
             this.Size = new Size(1116, 579);
+            rb_Priv.Visible = true;
         }
     }
 }

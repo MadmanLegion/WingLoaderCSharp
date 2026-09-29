@@ -47,7 +47,18 @@ namespace WingLoader_NS
         private void firstTimeSetup()
         {
             // Deploys DosBox
-            ZipHandler.unzipFileToFolder("dosbox-staging-windows-x64-v0.83.0-RC1.zip", "Dosbox");
+            string workingFolder = Directory.GetCurrentDirectory();
+            string dosboxRegex = "*dosbox-staging-windows-x64*";
+            string[] dosboxFilename = Directory.GetFiles(workingFolder, dosboxRegex);
+            if (dosboxFilename.Length > 0)
+            {
+                logger.log(string.Format("Found Dosbox at {0}", dosboxFilename[0]));
+                ZipHandler.unzipFileToFolder(dosboxFilename[0], "Dosbox");
+            }
+            else
+            {
+                logger.log(string.Format("Unable to find a dosbox Staging zip file in {0} with filename like {1}", workingFolder, dosboxRegex));
+            }
             ZipHandler.unzipFileToFolder("FFMPEG.zip", "FFMPEG");
             ZipHandler.unzipFileToFolder("Data.zip", "Data");
             ZipHandler.unzipFileToFolder("Wing.zip", "Wing");

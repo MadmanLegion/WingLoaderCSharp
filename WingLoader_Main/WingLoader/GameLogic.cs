@@ -11,6 +11,7 @@ namespace WingLoader_NS
         #region gameOffsets
         public string mem_Message1 = "";
         public bool mem_Message2Indirect = false;
+        public string mem_Message2IndirectStartOffset = "0x0";
         public string mem_Message2 = "";
         public string mem_FirstName = "";
         public string mem_Surname = "";
@@ -55,6 +56,7 @@ namespace WingLoader_NS
             mem_Message1 = "";
             mem_Message2 = "";
             mem_Message2Indirect = false;
+            mem_Message2IndirectStartOffset = "0x0";
             mem_FirstName = "";
             mem_Surname = "";
             mem_Callsign = "";
@@ -163,6 +165,25 @@ namespace WingLoader_NS
                 mem_FirstName = addHexStrings(gameStartOffsetHex, "0xBC16");    //0x2C942
                 mem_Surname = addHexStrings(gameStartOffsetHex, "0x6D3C");      //0x27A68
                 mem_Callsign = addHexStrings(gameStartOffsetHex, "0x6D55");     //0x27A81
+            }
+            else if (activeGameMode == WingLoader_Worker.GameMode.PRIV)
+            {
+                //Privateer...
+                mem_Message1 = addHexStrings("0", "0x804b4"); //Privateer Walking around messages
+                mem_Message2 = addHexStrings("0", "0x770CC");   //This is the address of the pointer to the conversation view...
+                mem_Message2Indirect = true; 
+                mem_Message2IndirectStartOffset = "0x76eD8"; //And it's added to this address...
+
+                //mem_Message1 = "0x80346"; //Intro text goes here
+                mem_Message1 = "0xD99F4"; //Inflight comms go here
+                mem_Surname = "0x76A40";  //Player Name
+                mem_Callsign = "0x76A52"; //Player Callsign
+
+                //When in the PADD:
+                mem_System = "0x7C610"; //Base
+                //mem_System = "0x7C582"; //System
+                //mem_System = "0x7BFAA"; //Quadrant
+
             }
         }
         #endregion gameOffsets

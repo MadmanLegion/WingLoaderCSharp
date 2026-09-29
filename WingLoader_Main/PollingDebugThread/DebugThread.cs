@@ -82,11 +82,20 @@ namespace WingLoader_NS
 
                 if (debugger is DosBox_Debugger)
                 {
-                    var bytes = debugger.getMemory_Sync(debugger.initialOffset, "10000000");
+                    var bytes = debugger.getMemory_Sync(debugger.initialOffset, "1000000");
                     if (bytes.Length != 3)
                     {
                         returnObject.msg1 = WingLoader_Debugger.BytesToString(getDosMemory(bytes, mem_Message1, -1));
-                        returnObject.msg2 = WingLoader_Debugger.BytesToString(getDosMemory(bytes, mem_Message2, -1));
+                        if (mem_Message2Indirect)
+                        {
+                            string memtarget = subtractHexStrings(BytesToHexString(getDosMemory(bytes, mem_Message2, 4), true).Replace(" ", ""), debugger.initialOffset);
+                            memtarget = addHexStrings(memtarget, mem_Message2IndirectStartOffset);
+                            returnObject.msg2 = WingLoader_Debugger.BytesToString(getDosMemory(bytes, memtarget, -1));
+                        }
+                        else
+                        {
+                            returnObject.msg2 = WingLoader_Debugger.BytesToString(getDosMemory(bytes, mem_Message2, -1));
+                        }
                         returnObject.firstName = WingLoader_Debugger.BytesToString(getDosMemory(bytes, mem_FirstName, -1));
                         returnObject.surname = WingLoader_Debugger.BytesToString(getDosMemory(bytes, mem_Surname, -1));
                         returnObject.callsign = WingLoader_Debugger.BytesToString(getDosMemory(bytes, mem_Callsign, -1));
@@ -110,6 +119,7 @@ namespace WingLoader_NS
                         if (mem_Message2Indirect)
                         {
                             string memtarget = subtractHexStrings(BytesToHexString(getWin32Memory(mem_Message2, 4), true).Replace(" ", ""), debugger.initialOffset);
+                            memtarget = addHexStrings(memtarget, mem_Message2IndirectStartOffset);
                             returnObject.msg2 = WingLoader_Debugger.BytesToString(getWin32Memory(memtarget, -1));
                         }
                         else

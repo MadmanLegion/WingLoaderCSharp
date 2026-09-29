@@ -123,7 +123,16 @@ namespace WingLoader_NS
                 }
                 else
                 {
-                    throw new Exception("Dosbox is started and connected, but unable to locate head app - is a game running?");
+                    if (DebugMode)
+                    {
+                        //Temporarily hack this to work for Privateer.....
+                        gameStartOffsetInt = -1;
+                        gameStartOffsetHex = "0x00";
+                    }
+                    else
+                    {
+                        throw new Exception("Dosbox is started and connected, but unable to locate head app - is a game running?");
+                    }
                 }
             }
         }

@@ -16,12 +16,14 @@ namespace WingLoader_Generics
                 , WC1, SM15, SM2, WC2, SO1, SO2
                 , WC1AT, SM15AT, SM2AT, WC2AT, SO1AT, SO2AT
                 , WC1KS, SM1KS, SM15KS, SM2KS, WC2KS, SO1KS, SO2KS
+                , PRIV
         }
         /// <summary>
         /// A lookup array matching game entries that require a DOS emulator wrapper to execute.
         /// </summary>
         public static GameMode[] gameModesDOS = { GameMode.WC1, GameMode.SM15, GameMode.SM2, GameMode.WC2, GameMode.SO1, GameMode.SO2
-                , GameMode.WC1AT, GameMode.SM15AT, GameMode.SM2AT, GameMode.WC2AT, GameMode.SO1AT, GameMode.SO2AT };
+                , GameMode.WC1AT, GameMode.SM15AT, GameMode.SM2AT, GameMode.WC2AT, GameMode.SO1AT, GameMode.SO2AT
+                , GameMode.PRIV};
 
         /// <summary>
         /// A lookup array matching game entries engineered to run natively inside modern Windows environments.
@@ -61,11 +63,11 @@ namespace WingLoader_Generics
             string args="";
             if (gameModesDOS.Contains(mode))
             {
-                args = $"-conf {System.IO.Directory.GetCurrentDirectory()}\\GameConfigs\\Dosbox.conf ";
+                args = $"-conf \"{System.IO.Directory.GetCurrentDirectory()}\\GameConfigs\\Dosbox.conf\" ";
             }
             if (param != "")
             {
-                args = args + $" -conf {System.IO.Directory.GetCurrentDirectory()}\\GameConfigs\\" + param;
+                args = args + $" -conf \"{System.IO.Directory.GetCurrentDirectory()}\\GameConfigs\\" + param + "\"";
             }
             if (Administrator)
             {

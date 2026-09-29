@@ -54,3 +54,11 @@ Also to the many others in the WC community whose work over the years have made 
   "..\..\3rd Party Packages\FFMPEG\*.*"
   "..\..\3rd Party Packages\SDL2-2.30.11-win32-x64\*.dll"
 This should be enough to get started.
+
+
+# Version History
+## 1.2607.4 
+- Initial release
+## 1.2609.28 
+- Updated handling of dosbox-staging zip files - will now allow you to put the latest version of dosbox in the folder and it will run with that (rather than overwriting with the Release Candidate version!)
+- Fix a bug where Dosbox versions wouldn't work if the application path contained a space (Wrap paths to config files in quotes)

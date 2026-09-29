@@ -65,6 +65,7 @@
             btn_testDoSomething2 = new Button();
             cb_WCKS = new CheckBox();
             rb_SM1 = new RadioButton();
+            rb_Priv = new RadioButton();
             SuspendLayout();
             // 
             // tb_messages
@@ -475,11 +476,24 @@
             rb_SM1.Text = "SM1";
             rb_SM1.UseVisualStyleBackColor = true;
             // 
+            // rb_Priv
+            // 
+            rb_Priv.AutoSize = true;
+            rb_Priv.Location = new Point(855, 430);
+            rb_Priv.Name = "rb_Priv";
+            rb_Priv.Size = new Size(71, 19);
+            rb_Priv.TabIndex = 38;
+            rb_Priv.TabStop = true;
+            rb_Priv.Text = "Privateer";
+            rb_Priv.UseVisualStyleBackColor = true;
+            rb_Priv.Visible = false;
+            // 
             // WingLoader_GUI_Form
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(1100, 540);
+            Controls.Add(rb_Priv);
             Controls.Add(rb_SM1);
             Controls.Add(cb_WCKS);
             Controls.Add(btn_testDoSomething2);
@@ -563,5 +577,6 @@
         private Button btn_testDoSomething2;
         private CheckBox cb_WCKS;
         private RadioButton rb_SM1;
+        private RadioButton rb_Priv;
     }
 }

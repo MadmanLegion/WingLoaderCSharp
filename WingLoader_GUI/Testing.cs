@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using WingLoader_Generics;
 using WingLoader_Generics.Debugger;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 using static WingLoader_Generics.WingLoader_Debugger;
 
 namespace WingLoader_GUI
@@ -40,7 +41,11 @@ namespace WingLoader_GUI
             try
             {
                 Byte[] bytes = new byte[] { 0x00, 0x00, 0x00 };
-                int dataspace = 250000;
+                int dataspace = 0;
+                if (debugger is Win32_Debugger)
+                    dataspace = 250000;
+                else if (debugger is DosBox_Debugger)
+                    dataspace = 1000000;
                 bool looping = true;
                 while (looping)
                 {
@@ -56,7 +61,9 @@ namespace WingLoader_GUI
 
                 hexstring = WingLoader_Debugger.BytesToHexString(bytes);
                 //tb_Hex.Text = hexstring;
-                tb_messages.Text += Environment.NewLine + (WingLoader_Debugger.BytesToString(trimFirstElementFromBytes(ReadMemoryBlock(bytes, tb_Address.Text, 100))));
+                tb_messages.Text += Environment.NewLine + $"Address {tb_Address.Text} " +
+                                    $"contains { (WingLoader_Debugger.BytesToString(trimFirstElementFromBytes(ReadMemoryBlock(bytes, tb_Address.Text, 100))))} " +
+                                    $"as {(WingLoader_Debugger.BytesToHexString(trimFirstElementFromBytes(ReadMemoryBlock(bytes, tb_Address.Text, 100))))} ";
             }
             catch
             {
@@ -64,6 +71,34 @@ namespace WingLoader_GUI
             }
 
             tb_hexstring.Text = WingLoader_Debugger.BytesToHexString(Encoding.UTF8.GetBytes(tb_string.Text));
+
+            /* Privateer
+                0x804b4 - Walking Around messages...
+                or in HEX '0x7B08C' or '0x7B5A6'or '0x7C706'or '0x7C706'
+                or in HEX '0x7B094' or '0x7F1E8'or '0xE9B2A'or '0xE9B2A'
+                or in HEX '0x7B086' or '0x7C702'or '0xE9B76'or '0xE9B76'
+                or in HEX '0x7B0C8' or '0x7F1F8'or '0xE9BD3'or '0xE9BD3'
+                or in HEX '0x7B0C8' or '0x7F1F2'or '0xE9C11'or '0xE9C11'
+                or in HEX '0x7B07E' or '0x7C6F8'or '0xE9C55'or '0xE9C55'
+                or in HEX '0x7B048' or '0x7C6F4'or '0xE9CBB'or '0xE9CBB'
+                or in HEX '0x7B07E' or '0x7C6F8'or '0x0'or '0x7C6F8'
+
+                0x770C0 -   EDT
+                0x770C0 -   EST
+                0x770CC -   Offset  41AE    
+            */
+
+            try //TestPrivateer logic:
+            {
+                byte[] bytes = debugger.getMemory_Sync(debugger.initialOffset, "1000000");
+                string memtarget = subtractHexStrings(BytesToHexString(ReadMemoryBlock(bytes, "0x770CC", 2), true).Replace(" ", ""), debugger.initialOffset);
+                string memtarget2 = addHexStrings(memtarget, "0x76eD8");
+                tb_messages.Text += Environment.NewLine + $"Read address {memtarget}, to get pointer to {memtarget2}, which contains {WingLoader_Debugger.BytesToString(WingLoader_Debugger.trimFirstElementFromBytes(ReadMemoryBlock(bytes,memtarget2, 100), -1))}";
+            }
+            catch
+            {
+                tb_messages.Text += Environment.NewLine + "Failed Privateer logic";
+            }
 
             try
             {
